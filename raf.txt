@@ -1,0 +1,4 @@
+Eloquent: API Resources
+php artisan make:resource UserCollection
+
+No:4 -> 24:55 -> 4:50

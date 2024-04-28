@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -12,7 +14,9 @@ class UserController extends Controller
      * Display a listing of the resource.
      */
     public function index() {
-        return User::all();
+        // return User::latest()->paginate(10);
+        // return UserResource::collection(User::latest()->paginate(10));
+        return new UserCollection(User::latest()->paginate(10));
     }
 
     /**
@@ -26,9 +30,8 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
+    public function show(string $id) {
+        return new UserResource(User::findOrFail($id));
     }
 
     /**
