@@ -3,12 +3,13 @@ import './bootstrap';
 
 import { createApp } from 'vue';
 import { createRouter, createWebHashHistory } from 'vue-router';
-
+import VueProgressBar from "@aacassandra/vue3-progressbar";
 // welcome
 import WelcomeLayout from './views/Welcome.vue'
 import App from './views/App.vue';
 
-import AdminLayout from './views/pages/admin/Layout.vue'
+
+import AdminLayout from './views/pages/admin/Layout.vue' 
 import AdminDashboard from './views/pages/admin/Dashboard.vue'
 
 import AdminUserLayout from './views/pages/admin/management/User/Layout.vue'
@@ -17,8 +18,24 @@ import AdminUserCreate from './views/pages/admin/management/User/Create.vue'
 
 // common components
 
-// project routes
 
+
+const VueProgressBarOptions = {
+    color: "#7367f0 ",
+    failedColor: "#874b4b",
+    thickness: "5px",
+    transition: {
+      speed: "0.5s",
+      opacity: "0.6s",
+      termination: 500,
+    },
+    autoRevert: true,
+    location: "top",
+    inverse: false,
+};
+
+
+// project routes
 // routers
 const router = createRouter({
     history: createWebHashHistory(),
@@ -76,5 +93,5 @@ router.beforeEach((to, from, next) => {
 const app = createApp({});
 
 app.component('app', App);
-app.use(router);
+app.use(router).use(VueProgressBar, VueProgressBarOptions);
 app.mount('#app')

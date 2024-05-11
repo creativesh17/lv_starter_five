@@ -13,10 +13,11 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+  
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
 
 Route::apiResource('users', 'App\Http\Controllers\Api\UserController');
+Route::get('search/users/{field}/{query}', 'App\Http\Controllers\Api\UserController@search')->name('users.search');

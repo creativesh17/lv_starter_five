@@ -16,24 +16,32 @@
                             <table class="table table-hover table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">First</th>
-                                        <th scope="col">Last</th>
-                                        <th scope="col">Handle</th>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Total</th>
+                                        <th class="text-center">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>Mark</td>
-                                        <td>Otto</td>
-                                        <td>@mdo</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Jacob</td>
-                                        <td>Thornton</td>
-                                        <td>@fat</td>
+                                    <tr v-for="(user, index) in users" :key="user.id">
+                                        <th scope="row">{{ index + 1}}</th>
+                                        <td>{{ user.name }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>{{ user.phone }}</td>
+                                        <td>{{ user.total }}</td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-info btn-sm">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash "></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -47,7 +55,32 @@
 </template>
 
 <script>
-export default {};
+export default {
+    data() {
+        return {
+            users: [],
+        }
+    },
+    mounted() {
+        console.log('Component mounted!');
+        this.getData();
+    },
+    methods: {
+        getData() {
+            this.$Progress.start();
+            axios.get('/api/users')
+                .then(response => {
+                    // console.log(response.data.data);
+                    this.users = response.data.data;
+                    this.$Progress.finish();
+                })
+                .catch(e => {
+                    console.log(e);
+                    this.$Progress.fail();
+                });
+        }
+    }
+};
 </script>
 
-<style scoped></style>
+<style></style>
