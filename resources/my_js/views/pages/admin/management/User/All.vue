@@ -32,19 +32,24 @@
                                         <td>{{ user.phone }}</td>
                                         <td>{{ user.total }}</td>
                                         <td class="text-center">
-                                            <button type="button" class="btn btn-info btn-sm">
+                                            <button type="button" class="btn btn-info btn-sm mlr-4">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            <button type="button" class="btn btn-primary btn-sm">
+                                            <button type="button" class="btn btn-primary btn-sm mlr-4">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button type="button" class="btn btn-danger btn-sm">
+                                            <button type="button" class="btn btn-danger btn-sm mlr-4">
                                                 <i class="fas fa-trash "></i>
                                             </button>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
+                            <Pagination class="mtb-5" v-if="pagination.last_page > 1"
+                                            :pagination="pagination"
+                                            :offset="5"
+                                            @paginate="getData()">
+                            </Pagination>
                         </div>
                     </div>
                 </div>
@@ -55,10 +60,17 @@
 </template>
 
 <script>
+import Pagination from '../../../../components/Pagination.vue'
 export default {
+    components: {
+        Pagination
+    }, 
     data() {
         return {
             users: [],
+            pagination: {
+                current_page: 1,
+            }
         }
     },
     mounted() {
@@ -68,10 +80,12 @@ export default {
     methods: {
         getData() {
             this.$Progress.start();
-            axios.get('/api/users')
+            axios.get('/api/users?page='+this.pagination.current_page) 
                 .then(response => {
-                    // console.log(response.data.data);
+                    console.log(response);
+                    console.log(response.data.data);
                     this.users = response.data.data;
+                    this.pagination = response.data.meta;
                     this.$Progress.finish();
                 })
                 .catch(e => {

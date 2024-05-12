@@ -4,6 +4,8 @@ import './bootstrap';
 import { createApp } from 'vue';
 import { createRouter, createWebHashHistory } from 'vue-router';
 import VueProgressBar from "@aacassandra/vue3-progressbar";
+// import Pagination from './views/components/Pagination.vue'
+
 // welcome
 import WelcomeLayout from './views/Welcome.vue'
 import App from './views/App.vue';
@@ -21,7 +23,7 @@ import AdminUserCreate from './views/pages/admin/management/User/Create.vue'
 
 
 const VueProgressBarOptions = {
-    color: "#7367f0 ",
+    color: "#7367f0",
     failedColor: "#874b4b",
     thickness: "5px",
     transition: {
@@ -93,5 +95,6 @@ router.beforeEach((to, from, next) => {
 const app = createApp({});
 
 app.component('app', App);
+// app.component('Pagination', Pagination);
 app.use(router).use(VueProgressBar, VueProgressBarOptions);
 app.mount('#app')
