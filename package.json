@@ -16,7 +16,10 @@
     },
     "dependencies": {
         "@aacassandra/vue3-progressbar": "^1.0.3",
+        "notivue": "^2.4.4",
+        "vform": "^2.1.2",
         "vue-progressbar": "^0.7.5",
-        "vue-router": "^4.3.2"
+        "vue-router": "^4.3.2",
+        "vue-toast-notification": "^3.1.2"
     }
 }

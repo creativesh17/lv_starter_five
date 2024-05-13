@@ -4,6 +4,9 @@ import './bootstrap';
 import { createApp } from 'vue';
 import { createRouter, createWebHashHistory } from 'vue-router';
 import VueProgressBar from "@aacassandra/vue3-progressbar";
+import ToastPlugin from 'vue-toast-notification';
+import 'vue-toast-notification/dist/theme-bootstrap.css';
+// import { Form, HasError, AlertError } from 'vform'
 // import Pagination from './views/components/Pagination.vue'
 
 // welcome
@@ -19,7 +22,6 @@ import AdminUserAll from './views/pages/admin/management/User/All.vue'
 import AdminUserCreate from './views/pages/admin/management/User/Create.vue'
 
 // common components
-
 
 
 const VueProgressBarOptions = {
@@ -95,6 +97,8 @@ router.beforeEach((to, from, next) => {
 const app = createApp({});
 
 app.component('app', App);
+// app.component(HasError.name, HasError);
+// app.component(AlertError.name, AlertError);
 // app.component('Pagination', Pagination);
-app.use(router).use(VueProgressBar, VueProgressBarOptions);
+app.use(router).use(VueProgressBar, VueProgressBarOptions).use(ToastPlugin);
 app.mount('#app')
