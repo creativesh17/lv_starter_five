@@ -61,13 +61,13 @@
                                         <td>{{ user.phone }}</td>
                                         <td>{{ user.total }}</td>
                                         <td class="text-center">
-                                            <button type="button" class="btn btn-info btn-sm mlr-4">
+                                            <button type="button" class="btn btn-info btn-sm mlrp-4">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            <button type="button" class="btn btn-primary btn-sm mlr-4">
+                                            <button type="button" class="btn btn-primary btn-sm mlrp-4">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button type="button" class="btn btn-danger btn-sm mlr-4">
+                                            <button type="button" class="btn btn-danger btn-sm mlrp-4">
                                                 <i class="fas fa-trash "></i>
                                             </button>
                                         </td>
@@ -81,7 +81,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <Pagination class="mtb-5" v-if="pagination.last_page > 1"
+                            <Pagination class="mtbp-10" v-if="pagination.last_page > 1"
                                             :pagination="pagination"
                                             :offset="5"
                                             @paginate="query ===  '' ? getData() : searchData()">
@@ -97,47 +97,55 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="userModalLongTitle">Modal title</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <h5 class="modal-title" id="userModalLongTitle">Add New User</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <form @submit.prevent="store"> 
-                        <div class="modal-body">                
-                            
-                            <!-- <input v-model="form.name" type="text" name="name" placeholder="Name">
-                            <div v-if="form.errors.has('name')" v-html="form.errors.get('name')" /> -->
+                        <div class="modal-body">                                        
 
                             <div class="form-group">
-                                <label for="name">Name</label>
-                                <input v-model="form.name" type="text" name="name" class="form-control">
+                                <label class="mp-5" for="name">Name</label>
+                                <input type="text" id="name" name="name" class="form-control mp-5"  v-model="form.name">
                             </div>
 
                             <div class="form-group">
-                                <label for="email">Email</label>
-                                <input v-model="form.email" type="email" name="email" class="form-control">
+                                <label class="mp-5" for="email">Email</label>
+                                <input type="email" id="email" name="email" class="form-control mp-5" v-model="form.email">
                             </div>
 
                             <div class="form-group">
-                                <label for="phone">Phone</label>
-                                <input v-model="form.phone" type="tel" name="phone" class="form-control">
+                                <label class="mp-5" for="password">Password</label>
+                                <input type="password" id="password" name="password" class="form-control mp-5" v-model="form.password">
                             </div>
 
                             <div class="form-group">
-                                <label for="address">Address</label>
-                                <input v-model="form.address" type="text" name="address" class="form-control">
+                                <label class="mp-5" for="password_confirmation"> Confirm Password</label>
+                                <input type="password" id="password_confirmation" name="password_confirmation" class="form-control mp-5" v-model="form.password_confirmation">
                             </div>
 
                             <div class="form-group">
-                                <label for="total">Total</label>
-                                <input v-model="form.total" type="text" name="total" class="form-control">
+                                <label class="mp-5" for="phone">Phone</label>
+                                <input type="tel" id="phone" name="phone" class="form-control mp-5" v-model="form.phone">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="mp-5" for="address">Address</label>
+                                <!-- <input type="text" id="address" name="address" class="form-control mp-5" v-model="form.address"> -->
+                                <textarea name="address" id="address" class="form-control mp-5" v-model="form.address"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="mp-5" for="total">Total</label>
+                                <input type="number" id="total" name="total" class="form-control mp-5" v-model="form.total">
                             </div>
 
                         </div>
                     
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" :disabled="form.busy" class="btn btn-primary">Save changes</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save changes</button>
                         </div>
                     </form>
                 </div>
@@ -167,6 +175,8 @@ export default {
                 name: '',
                 email: '',
                 phone: '',
+                password: '',
+                password_confirmation: '',
                 address: '',
                 total: '',
             },
@@ -214,6 +224,7 @@ export default {
                     this.$Progress.fail();
                 })
         },
+
         reload() {
             this.getData();
             this.query = '';
@@ -221,18 +232,76 @@ export default {
             this.$toast.open({
                 message: 'Data successfully reloaded!',
                 type: 'success',
-                position: 'top-right'
+                position: 'top-right',
+                duration: 3000
             });
 
         },
         create() {
             $('#userModalLong').modal('show');
         },
-        store() {
-            console.log("Hello");
+        async store() {
+            // console.log("Hello");
+            this.$Progress.start();
+            await axios.post('/api/users', this.form)
+                    .then(response => {
+                        // console.log("Dekhi ", response);
+                        this.getData();
+                        $('#userModalLong').modal('hide');
+                        // this.form.reset();
+                        // $('.modal-body').reset();                        
+                        // $('.modal-body').clear();
+                        this.$Progress.finish();
+                        this.$toast.open({
+                            message: 'Data successfully added!',
+                            type: 'success',
+                            position: 'top-right'
+                        });
+                    })
+                    .catch(e => {
+                        // console.log("Error first ", e.response);
+                        var getErrors = e.response.data.errors;
+                        console.log("Error cleaner ", getErrors);
+
+
+                        for (const key in getErrors) {
+                            if (Object.hasOwnProperty.call(getErrors, key)) {
+                                const element = getErrors[key];
+                                // console.log("resss",element);
+                                let selector = "name";
+                                let el = document.querySelector(`input[${selector}="${key}`);
+                                if (!el) {
+                                    el = document.getElementById(`${key}`);
+                                }
+
+                                /**
+                                 *  if html element found then take action
+                                 */
+                                if (el) {
+                                    $(`<div class="error text-warning">${element[0]}</div>`).insertAfter(el);
+                                    el.classList.add("border-warning");
+                                }
+                            }
+                        }
+
+                        this.$Progress.fail();
+                        this.$toast.open({
+                            message: 'Something went wrong!',
+                            type: 'error',
+                            position: 'top-right'
+                        })
+
+                    
+                    });
+
         }
     }
 };
 </script>
 
 <style></style>
+
+
+<!-- <span class="invalid-feedback" alert="role"> 
+    <strong>{{$errors->first('name')}}</strong>
+</span> -->

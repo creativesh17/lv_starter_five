@@ -1,5 +1,6 @@
 // setup  files
 import './bootstrap';
+import './views/plugins/axios_setup.js';
 
 import { createApp } from 'vue';
 import { createRouter, createWebHashHistory } from 'vue-router';

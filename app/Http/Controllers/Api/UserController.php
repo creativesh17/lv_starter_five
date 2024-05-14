@@ -8,6 +8,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -24,20 +25,33 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request) {
-        // return $request->all();
-        $this->validate($request, [
+
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users',
-            'password' => 'required',
+            'password' => 'required|confirmed|min:8|max:20',
             'phone' => 'required|numeric',
             'address' => 'required',
             'total' => 'required',
         ]);
         
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            // If validation fails, return validation errors as JSON response
+            // return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json([
+                'status' => 'validation_error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;        
-        $user->password = Hash::make($request->password);
+        $user->password = Hash::make($request->password) ?? Hash::make('12345678');
         $user->phone = $request->phone;
         $user->address = $request->address;
         $user->total= $request->total;
