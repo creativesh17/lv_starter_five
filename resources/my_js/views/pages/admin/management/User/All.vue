@@ -64,10 +64,10 @@
                                             <button type="button" class="btn btn-info btn-sm mlrp-4">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            <button type="button" class="btn btn-primary btn-sm mlrp-4">
+                                            <button type="button" class="btn btn-primary btn-sm mlrp-4" @click="edit(user)">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                            <button type="button" class="btn btn-danger btn-sm mlrp-4">
+                                            <button type="button" class="btn btn-danger btn-sm mlrp-4" @click="destroy(user)">
                                                 <i class="fas fa-trash "></i>
                                             </button>
                                         </td>
@@ -97,12 +97,12 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="userModalLongTitle">Add New User</h5>
+                        <h5 class="modal-title" id="userModalLongTitle">{{ editMode ? "Edit" : "Add New" }} User</h5>
                         <button type="button" class="close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form @submit.prevent="store"> 
+                    <form @submit.prevent="editMode ? update() : store()"> 
                         <div class="modal-body">                                        
 
                             <div class="form-group">
@@ -115,7 +115,7 @@
                                 <input type="email" id="email" name="email" class="form-control mp-5" v-model="form.email">
                             </div>
 
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label class="mp-5" for="password">Password</label>
                                 <input type="password" id="password" name="password" class="form-control mp-5" v-model="form.password">
                             </div>
@@ -123,7 +123,7 @@
                             <div class="form-group">
                                 <label class="mp-5" for="password_confirmation"> Confirm Password</label>
                                 <input type="password" id="password_confirmation" name="password_confirmation" class="form-control mp-5" v-model="form.password_confirmation">
-                            </div>
+                            </div> -->
 
                             <div class="form-group">
                                 <label class="mp-5" for="phone">Phone</label>
@@ -164,6 +164,9 @@ export default {
     }, 
     data() {
         return {
+            editMode: false,
+            editId: '',
+            deleteId: '',
             users: [],
             pagination: {
                 current_page: 1,
@@ -225,7 +228,7 @@ export default {
                 })
         },
 
-        reload() {
+        async reload() {
             this.getData();
             this.query = '';
             this.queryField = 'name';
@@ -237,11 +240,19 @@ export default {
             });
 
         },
-        create() {
+        async create() {
+            this.editMode = false;
+            this.form = { id: '', name: '', email: '', phone: '', password: '', password_confirmation: '',  address: '', total: ''
+                        };
+            $('#userModalLong').on('hidden.bs.modal', function () {
+                // remove the bs.modal data attribute from it
+                $(this).removeData('bs.modal');
+            });       
             $('#userModalLong').modal('show');
         },
         async store() {
             // console.log("Hello");
+             
             this.$Progress.start();
             await axios.post('/api/users', this.form)
                     .then(response => {
@@ -261,15 +272,81 @@ export default {
                     .catch(e => {
                         // console.log("Error first ", e.response);
                         var getErrors = e.response.data.errors;
-                        console.log("Error cleaner ", getErrors);
+                        console.log("Error cleaner ", getErrors)
 
+                        // for (const key in getErrors) {
+                        //     if (Object.hasOwnProperty.call(getErrors, key)) {
+                        //         const element = getErrors[key];
+                        //         // console.log("resss",element);
+                        //         let selector = "name";
+                        //         let el = document.querySelector(`input[${selector}="${key}"`);
+                        //         if (!el) {
+                        //             el = document.getElementById(`${key}`);
+                        //         }
+
+                        //         /**
+                        //          *  if html element found then take action
+                        //          */
+                        //         if (el) {
+                        //             $(`<div class="error text-warning form-validation-error">${element[0]}</div>`).insertAfter(el);
+                        //             el.classList.add("border-warning");
+                        //         }
+                        //     }
+                        // }
+
+                        this.$Progress.fail();
+                        this.$toast.open({
+                            message: 'Something went wrong!',
+                            type: 'error',
+                            position: 'top-right'
+                        })
+
+                    
+                    });
+
+        },
+        async edit(user) {
+            this.editMode = true;
+            
+            $('#userModalLong').on('hidden.bs.modal', function () {                
+                $(this).removeData('bs.modal');                
+            });   
+
+            this.form = user;
+            this.editId = user.id;
+
+            $('#userModalLong').modal('show');
+
+        },
+        async update() {
+            this.$Progress.start();
+            console.log("Dekhi ", this.form);
+            await axios.post(`/api/users/${this.editId}?_method=patch`,  this.form)
+                    .then(response => {
+                        this.getData();
+                        $('#userModalLong').modal('hide');
+                        // this.form.reset();
+                        // $('.modal-body').reset();                        
+                        // $('.modal-body').clear();
+                        this.editId = '';
+                        this.$Progress.finish();
+                        this.$toast.open({
+                            message: 'Data successfully updated!',
+                            type: 'success',
+                            position: 'top-right'
+                        });
+                    })
+                    .catch(e => {
+                        // console.log("Error first ", e.response);
+                        var getErrors = e.response.data.errors;
+                        console.log("Error cleaner ", getErrors);
 
                         for (const key in getErrors) {
                             if (Object.hasOwnProperty.call(getErrors, key)) {
                                 const element = getErrors[key];
                                 // console.log("resss",element);
                                 let selector = "name";
-                                let el = document.querySelector(`input[${selector}="${key}`);
+                                let el = document.querySelector(`input[${selector}="${key}"`);
                                 if (!el) {
                                     el = document.getElementById(`${key}`);
                                 }
@@ -293,7 +370,35 @@ export default {
 
                     
                     });
+        },
 
+        async destroy(user) {
+            // window.s_alert('')
+           let c = await window.s_confirm();
+           this.deleteId = user.id;
+           await axios.post(`/api/users/${this.deleteId}?_method=delete`)
+            .then(response => {
+                this.getData();
+                    // this.form.reset();
+                    // $('.modal-body').reset();                        
+                    // $('.modal-body').clear();
+                    this.deleteId = '';
+                    this.$Progress.finish();
+                    // this.$toast.open({
+                    //     message: 'Data successfully deleted!',
+                    //     type: 'success',
+                    //     position: 'top-right'
+                    // });
+                    window.s_alert("Data successfully deleted!");
+            })
+            .catch(e => {
+                this.$Progress.fail();
+                this.$toast.open({
+                    message: 'Something went wrong!',
+                    type: 'error',
+                    position: 'top-right'
+                });
+            })
         }
     }
 };

@@ -29,7 +29,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed|min:8|max:20',
+            // 'password' => 'required|confirmed|min:8|max:20',
             'phone' => 'required|numeric',
             'address' => 'required',
             'total' => 'required',
@@ -71,7 +71,9 @@ class UserController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id) {
-        $this->validate($request, [
+        // dd($request->all());
+        // $user = User::findOrFail($user->id);
+        $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users,email,'.$id,            
             'phone' => 'required|numeric',
@@ -79,7 +81,17 @@ class UserController extends Controller
             'total' => 'required',
         ]);
         
-        $user = User::findOrFail($id);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'validation_error',
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        
+        $user = User::where('id', $id)->first();
         $user->name = $request->name;
         $user->email = $request->email;
         $user->phone = $request->phone;
